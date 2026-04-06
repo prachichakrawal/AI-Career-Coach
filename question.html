@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Question</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #0F172A;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* 🌌 Animated Background Blobs */
+        .bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .blob {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.5;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .b1 { background: #22D3EE; top: 10%; left: 10%; }
+        .b2 { background: #8B5CF6; bottom: 10%; right: 10%; }
+
+        @keyframes float {
+            0%,100% { transform: translateY(0px); }
+            50% { transform: translateY(-40px); }
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+        }
+
+        /* 💎 Glass Card */
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            animation: fadeIn 0.6s ease;
+            transition: 0.4s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 40px rgba(139,92,246,0.4);
+        }
+
+        @keyframes fadeIn {
+            from {opacity:0; transform: translateY(40px);}
+            to {opacity:1; transform: translateY(0);}
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .progress {
+            font-weight: bold;
+            font-size: 18px;
+            background: linear-gradient(90deg, #22D3EE, #8B5CF6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .timer {
+            font-weight: bold;
+            background: #ef4444;
+            padding: 6px 14px;
+            border-radius: 20px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0px red; }
+            50% { box-shadow: 0 0 15px red; }
+            100% { box-shadow: 0 0 0px red; }
+        }
+
+        /*  Question typing effect */
+        .question-box {
+            background: rgba(255,255,255,0.08);
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-left: 4px solid #22D3EE;
+        }
+
+        textarea {
+            width: 100%;
+            height: 130px;
+            border-radius: 12px;
+            border: none;
+            padding: 12px;
+            font-size: 15px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            transition: 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 15px #22D3EE;
+        }
+
+        .btns {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .submit {
+            background: linear-gradient(90deg, #22D3EE, #8B5CF6);
+            color: white;
+        }
+
+        .submit:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px #8B5CF6;
+        }
+
+        .skip {
+            background: #ef4444;
+            color: white;
+        }
+
+        .skip:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px red;
+        }
+
+        .final {
+            background: #111827;
+            color: white;
+        }
+
+        .final:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px #22D3EE;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 12px;
+            color: #94A3B8;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="bg">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+</div>
+
+<div class="container">
+    <div class="card">
+
+        <div class="header">
+            <div class="progress">Question {{index}}</div>
+            <div class="timer">⏱ <span id="time">60</span>s</div>
+        </div>
+
+        <div class="question-box">
+            {{question}}
+        </div>
+
+        <form method="post" id="quizForm">
+            <textarea id="answerBox" name="answer" placeholder="Type your answer..."></textarea>
+            <div class="char-count" id="charCount">0 characters</div>
+
+            <div class="btns">
+                <button type="submit" class="submit">Submit</button>
+
+                <button type="submit" name="skip" value="yes" class="skip">
+                    Skip
+                </button>
+
+                <button type="submit" name="final_submit" value="yes" class="final">
+                    Finish Test
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+let time = 60;
+let timer = setInterval(() => {
+    time--;
+    document.getElementById("time").innerText = time;
+
+    if (time <= 0) {
+        clearInterval(timer);
+        document.getElementById("quizForm").submit();
+    }
+}, 1000);
+
+// Character counter
+const textarea = document.getElementById("answerBox");
+const counter = document.getElementById("charCount");
+
+textarea.addEventListener("input", () => {
+    counter.innerText = textarea.value.length + " characters";
+});
+</script>
+
+</body>
+</html>
